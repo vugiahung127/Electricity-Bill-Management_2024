@@ -1,0 +1,231 @@
+#include<iostream>
+#include<fstream>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+#include<iomanip>
+using namespace std;
+class thongtin{
+	public:  
+	char ten[40];
+	char diachi[40];
+	char gioitinh[10];
+	int sodien;
+	int tiendien;
+}; 
+int laychiso(vector<thongtin> v, char ten[]) {
+	for(int i = 0; i< v.size(); i++){
+		if(strcmp(v[i].ten, ten) > 0){
+			return i;
+		}
+	}
+	return v.size();
+}
+
+void them(vector<thongtin> &v){
+	thongtin s;
+	cout<<"\nNhap ten ho gia dinh: ";
+	cin.getline(s.ten, 40);
+	fflush(stdin);
+	cout<<"\nNhap dia chi: ";
+	cin.getline(s.diachi,40);
+	fflush(stdin);
+	cout<<"\nNhap gioi tinh chu nha: ";
+	cin.getline(s.gioitinh, 10);
+	fflush(stdin);
+	cout<<"\nNhap so dien cua ho gia dinh: ";
+	cin>> s.sodien;
+	fflush(stdin);
+	s.tiendien=s.sodien*2000;
+	int i = laychiso(v,s.ten);
+	v.insert(v.begin()+i, s);
+}
+
+void chinh(vector<thongtin> &v){
+	char ten[40];
+	cout<<"\nNhap ten can chinh sua: ";
+	cin.getline(ten, 40);
+	thongtin s;
+	bool b = true;
+	for(int i = 0; i< v.size(); i++){
+		if(strcmp(v[i].ten, ten) == 0){
+			s = v[i];
+			v.erase(v.begin()+i);
+			b =false;
+			break;
+		}
+	}
+	if(!b) {
+		cout<<"\nNhap ten moi: ";
+		cin.getline(s.ten, 40);
+		cout<<"\nNhap so dien moi: ";
+		cin>> s.sodien;
+		int i = laychiso(v,s.ten);
+		v.insert(v.begin()+i, s);
+	}
+	else cout<<"\nKhong hop le";
+}
+void xoabo(vector<thongtin> &v){     
+	char ten[40];
+	cout<<"\nEnter name to remove: ";
+	cin.getline(ten, 40);
+	bool b = true;
+	for(int i = 0; i< v.size(); i++){
+		if(strcmp(v[i].ten, ten) == 0){
+			v.erase(v.begin()+i);
+			b =false;
+			break;
+		}
+	}
+	if(!b) {
+		cout<<"\nXoa thanh cong."; 
+	}
+	else cout<<"\nKhong hop le";
+}
+
+void hienthi(vector<thongtin> v){
+	if(v.size() > 0){
+		cout<< left << setw(20) << "Ten" << setw(20) << "Dia chi" << setw(20) << "Gioi tinh" << setw(20) 
+		<< "So dien" << setw(20) << "Tien dien" <<  endl;
+		for(int i = 0; i< v.size(); i++){
+			cout<< left<< setw(20) << v[i].ten << setw(20) << v[i].diachi << setw(20) << v[i].gioitinh
+			<< setw(20) << v[i].sodien << setw(20) << v[i].tiendien << endl;
+		}
+	}
+	else
+		cout<<"\nDanh sach trong";
+}
+
+void timtheoten(vector<thongtin> v, char ten[]){
+	vector<thongtin> s;
+	for(int i = 0; i< v.size(); i++){
+		if(stricmp(v[i].ten, ten) == 0){
+			s.push_back(v[i]);
+		}
+	}
+	if(s.size() > 0){
+		hienthi(s);
+	}
+	else cout<<"\nN/A";
+}
+
+bool cachxep(thongtin a, thongtin b){
+	return (a.sodien > b.sodien);
+}
+
+void xeptheosodien(vector<thongtin> v){
+	sort(v.begin(), v.end(), cachxep);
+	hienthi(v);
+}
+
+void xuatgioitinh(vector<thongtin> v){
+	int c;
+	cout<<"\nNhap 1. Nam\n2. Nu ? ";
+	cin>> c;
+	char gioitinh[5];
+	switch(c){
+		case 1: {
+			strcpy(gioitinh,"nam");
+			break;
+		}
+		case 2: {
+			strcpy(gioitinh,"nu");
+			break;
+		}
+		default: cout<<"\nThu lai";
+	}
+	if(c == 1 || c == 2){
+		vector<thongtin> s;
+		for(int i = 0; i< v.size(); i++){
+			if(stricmp(v[i].gioitinh, gioitinh) == 0){
+				s.push_back(v[i]);
+			}
+		}
+		hienthi(s);
+	}
+}
+
+void inrafile(vector<thongtin> v){
+	ofstream ofs("thongtin.txt");
+	
+	fflush(stdin);
+	for(int i = 0; i< v.size(); i++){
+		ofs<< left << setw(20) << v[i].ten << setw(20) << v[i].diachi << setw(20) << v[i].gioitinh 
+		<< setw(20) << v[i].sodien << setw(20) << v[i].tiendien << endl;
+	}
+	ofs.close();
+	cout<<"\nViet thanh cong!";
+}
+void docfile (){
+    fstream thongtin;
+    cout<<"Thong tin nguoi dung"<<endl;
+    thongtin.open("thongtin.txt",ios::in);
+    if(thongtin.is_open()){
+    	string line;
+    	while (getline(thongtin,line)){
+    		cout <<line<<endl;
+		}
+		thongtin.close();
+	}
+}
+menu(){
+	int ch;
+	vector<thongtin> list;
+	while(true){
+		cout<<"\n=====MENU=====\n1. Them\n2. Chinh sua\n3. Xoa bo\n4. Hien thi\n5. Tim ten"
+			<<"\n6. Hien thi theo so dien\n7. Hien thi theo gioi tinh \n8. Luu file\n9. Doc file \n0. Exit\n Ban chon so may ? ";
+		cin>> ch;
+		char ss[5];
+		cin.getline(ss,5);
+		switch(ch){
+			case 0:{
+				cout<<"\nCam on ban";
+				break;
+			}	
+			case 1:{
+				them(list);
+				break;								
+			}
+			case 2:{
+				chinh(list);
+				break;
+			}
+			case 3:{
+				xoabo(list);
+				break;
+			}
+			case 4:{
+				hienthi(list);
+				break;
+			}
+			case 5:{
+				char ten[40];
+				cout<<"\nEnter name to search: ";
+				cin.getline(ten,40);
+				timtheoten(list,ten);
+				break;
+			}
+			case 6:{
+				xeptheosodien(list);
+				break;
+			}
+			case 7:{
+				xuatgioitinh(list);
+				break;
+			}
+			case 8:{
+				inrafile(list);
+				break;
+			}
+			case 9:{
+				docfile();
+				break;
+		}
+		if(ch == 0) break;
+	}
+}
+}
+int main(){
+	menu();
+	return 0;
+}
